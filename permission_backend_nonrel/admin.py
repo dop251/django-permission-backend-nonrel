@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group, Permission
 
 from .models import UserPermissionList, GroupPermissionList
 from .utils import update_permissions_user, \
-     update_user_groups, update_permissions_group
+     update_user_groups, update_permissions_group, get_permission_choices
 
 
 class UserForm(forms.ModelForm):
@@ -27,11 +27,7 @@ class NonrelPermissionUserForm(UserForm):
         self.fields['user_permissions'] = forms.MultipleChoiceField(required=False)
         self.fields['groups'] = forms.MultipleChoiceField(required=False)
         
-        permissions_objs = Permission.objects.all().order_by('name')
-        choices = []
-        for perm_obj in permissions_objs:
-            choices.append([perm_obj.id, perm_obj.name])
-        self.fields['user_permissions'].choices = choices
+        self.fields['user_permissions'].choices = get_permission_choices()
         
         group_objs = Group.objects.all()
         choices = []
@@ -90,11 +86,7 @@ class GroupForm(forms.ModelForm):
 
         self.fields['permissions'] = forms.MultipleChoiceField(required=False)
    
-        permissions_objs = Permission.objects.all().order_by('name')
-        choices = []
-        for perm_obj in permissions_objs:
-            choices.append([perm_obj.id, perm_obj.name])
-        self.fields['permissions'].choices = choices
+        self.fields['permissions'].choices = get_permission_choices()
 
         try:
             current_perm_list = GroupPermissionList.objects.get(

@@ -1,4 +1,5 @@
 from copy import copy
+from django.contrib.auth.models import Permission
 
 from .models import UserPermissionList, GroupPermissionList
 
@@ -76,3 +77,11 @@ def update_user_groups(user, groups):
             pl.group_fk_list.append(group_id)
     
     pl.save()
+
+def get_permission_choices():
+    permissions_objs = list(Permission.objects.all())
+    permissions_objs.sort(lambda x,y: cmp(unicode(x), unicode(y)))
+    choices = []
+    for perm_obj in permissions_objs:
+        choices.append([perm_obj.id, perm_obj])
+    return choices
